@@ -7,7 +7,7 @@ body {
 }
 
 .button {
-	background-color: black;
+	background-color: #C5C6C7;
 	border: solid;
 	border-color: black;
 	color: White;
@@ -29,34 +29,38 @@ body {
 }
 
 header {
-	background-color: #666;
+	background-color: black;
 	padding: 30px;
 	border-style: solid;
 	text-align: center;
 	font-size: 35px;
-	color: Maroon;
+	color: aquamarine;
 }
 
 nav {
 	text-align: center;
 	border-style: solid;
-	border-color: maroon;	
+	border-color: aquamarine;
 	border-top-style: none;
 	float: left;
 	width: 30%;
-	background: #666;
+	background: #1F2833;
 	padding: 7% 0;
 	overflow: auto;
+	color: white;
 }
 
 content {
 	float: left;
 	padding: 0px 20px;
 	width: 70%;
-	background-color: Maroon;
+	background-color: #1F2833;
 	border-style: solid;
-	border-color: black;
+	border-top-style: none;
+	border-left-style: none;
+	border-color: aquamarine;
 	overflow: auto;
+	color: white;
 }
 
 section:after {
@@ -66,24 +70,24 @@ section:after {
 }
 
 footer {
-	background-color: #666;
+	background-color: Black;
 	padding: 10px;
 	text-align: center;
 	color: white;
 	border-style: solid;
 	border-top-style: none;
-	border-color: maroon;
+	border-color: aquamarine;
 }
 
 a:link {
 
 	text-decoration: None;
-	
+
 }
 
 a:visited {
 
-	color: grey;
+	background-color: dimgrey;
 
 }
 
