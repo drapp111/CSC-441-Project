@@ -18,6 +18,27 @@ table {
 
 </style>
 
+<script>
+
+  function validate_title() {
+    var title_input = document.forms["to-do"]["title"].value;
+      if (typeof(title_input) != "string") {
+        alert("Title must be a string.");
+        return false;
+      }
+      else if (title_input == "") {
+        alert("Title is required.")
+        return false;
+      }
+  }
+
+  function validate_date() {
+    
+  }
+
+</script>
+
+
 </head>
 <body>
 
@@ -35,7 +56,7 @@ table {
 
 	<content style = "height: 350px;">
 		<div>
-		<form action = "nav.html">
+		<form name = "to-do" action = "nav.html" onsubmit = "return validateForm()" method = post>
 		<table>
 			<tr>
 				<td colspan = "1"><label for = "Title">Title...</label></td>
