@@ -28,8 +28,10 @@ table {
   }
 
   function validate_date() {
-    var due_date = document.forms["to-do"]["duedate"].valueAsDate;
-    if (due_date == null) {
+    var due_date = document.forms["to-do"]["duedate"].value;
+    var date = new Date(due_date);
+    console.log(date);
+    if (date == null) {
       return false;
     }
   }
@@ -43,13 +45,20 @@ table {
   }
 
   function validate_priority() {
-    var alphabet = ("abcdefghijklmnopqrstuvwxyz").toUpperCase().split("");
+    var alphabet = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
     var priority = document.forms["to-do"]["priority"].value;
+    if(priority == "") {
+      return true;
+    }
     if (isNaN(priority)) {
-      if (!(alphabet.contains(priority.toUpperCase()) {
+      if (!(alphabet.includes(priority.toUpperCase()))) {
         return false;
       }
-    else if (x < 1 || x > 10) {
+      else {
+        return true;
+      }
+    }
+    else if (priority < 1 || priority > 10) {
       return false;
     }
   }
@@ -57,7 +66,10 @@ table {
   function validate_status() {
     var valid_inputs = ["not-started", "in-progress", "done"];
     var status = document.forms["to-do"]["status"].value;
-    if (!valid_inputs.contains(status)) {
+    if(status == "") {
+      return true;
+    }
+    if (!valid_inputs.includes(status)) {
       return false;
     }
   }
@@ -87,7 +99,6 @@ table {
       alert(alert_message);
       return false;
     }
-
   }
 
 </script>
@@ -110,19 +121,19 @@ table {
 
 	<content style = "height: 350px;">
 		<div>
-		<form name = "to-do" action = "nav.html" onsubmit = "return validate_form()" method = "post">
+		<form name = "to-do" onsubmit = "return validate_form()" method = "post">
 		<table>
 			<tr>
-				<td colspan = "1"><label for = "Title">Title...</label></td>
+				<td colspan = "1"><label for = "Title">Title</label></td>
 				<td colspan = "1"><label for="duedate">Due Date</label></td>
 			</tr>
 			<tr>
-				<td><input type="text" id="title" name="title" required placeholder="Title..."></td>
-  				<td><input type= "date" id = "duedate" name = "duedate"></td>
+				<td><input type="text" id="title" name="title" placeholder="Title..."></td>
+  				<td><input type= "date" id = "duedate" name = "duedate" placeholder = "mm/dd/yyyy"></td>
 			</tr>
 		</table>
   			<label for="description">Description</label>
-  			<input type="text" id="description" name="description" required placeholder="Description...">
+  			<input type="text" id="description" name="description" placeholder="Description...">
 		<table>
 			<tr>
 				<td colspan = "1"><label for="priority">Priority</label></th>
@@ -131,7 +142,7 @@ table {
 
 			<tr>
 				<td><input style = "width: 100%;" type="text" id="priority" name="priority" placeholder="Priority..."></th>
-				<td><input style = "width: 100%;" type="text" id="priority" name="priority" placeholder="Status..."></th>
+				<td><input style = "width: 100%;" type="text" id="status" name="status" placeholder="Status..."></th>
   			</tr>
 		</table>
 			<input type="submit" value="Submit">
