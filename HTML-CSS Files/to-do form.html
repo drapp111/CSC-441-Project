@@ -22,18 +22,72 @@ table {
 
   function validate_title() {
     var title_input = document.forms["to-do"]["title"].value;
-      if (typeof(title_input) != "string") {
-        alert("Title must be a string.");
-        return false;
-      }
-      else if (title_input == "") {
-        alert("Title is required.")
+      if (title_input.length < 1) {
         return false;
       }
   }
 
   function validate_date() {
-    
+    var due_date = document.forms["to-do"]["duedate"].valueAsDate;
+    if (due_date == null) {
+      return false;
+    }
+  }
+
+  function validate_description() {
+    var description = document.forms["to-do"]["description"].value;
+    if(description.length < 1) {
+      return false;
+    }
+
+  }
+
+  function validate_priority() {
+    var alphabet = ("abcdefghijklmnopqrstuvwxyz").toUpperCase().split("");
+    var priority = document.forms["to-do"]["priority"].value;
+    if (isNaN(priority)) {
+      if (!(alphabet.contains(priority.toUpperCase()) {
+        return false;
+      }
+    else if (x < 1 || x > 10) {
+      return false;
+    }
+  }
+
+  function validate_status() {
+    var valid_inputs = ["not-started", "in-progress", "done"];
+    var status = document.forms["to-do"]["status"].value;
+    if (!valid_inputs.contains(status)) {
+      return false;
+    }
+  }
+
+  function validate_form() {
+    alert("Validate form is being run");
+    var alert_message = "";
+    if(validate_title() == false) {
+      alert_message += "Title must contain more than one character\n";
+    }
+    if(validate_date() == false) {
+      alert_message += "Date is invalid\n";
+    }
+    if(validate_description() == false) {
+      alert_message += "Description must contain more than one character\n";
+    }
+    if(validate_priority() == false) {
+      alert_message += "Priority is invalid\n";
+    }
+    if(validate_status() == false) {
+      alert_message += "Status is invalid";
+    }
+    if(alert_message.length == 0) {
+      return true;
+    }
+    else {
+      alert(alert_message);
+      return false;
+    }
+
   }
 
 </script>
@@ -56,19 +110,19 @@ table {
 
 	<content style = "height: 350px;">
 		<div>
-		<form name = "to-do" action = "nav.html" onsubmit = "return validateForm()" method = post>
+		<form name = "to-do" action = "nav.html" onsubmit = "return validate_form()" method = "post">
 		<table>
 			<tr>
 				<td colspan = "1"><label for = "Title">Title...</label></td>
 				<td colspan = "1"><label for="duedate">Due Date</label></td>
 			</tr>
 			<tr>
-				<td><input type="text" id="title" name="title" placeholder="Title..."></td>
+				<td><input type="text" id="title" name="title" required placeholder="Title..."></td>
   				<td><input type= "date" id = "duedate" name = "duedate"></td>
 			</tr>
 		</table>
   			<label for="description">Description</label>
-  			<input type="text" id="description" name="description" placeholder="Description...">
+  			<input type="text" id="description" name="description" required placeholder="Description...">
 		<table>
 			<tr>
 				<td colspan = "1"><label for="priority">Priority</label></th>
