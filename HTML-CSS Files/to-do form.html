@@ -17,93 +17,7 @@ table {
 }
 
 </style>
-
-<script>
-
-  function validate_title() {
-    var title_input = document.forms["to-do"]["title"].value;
-      if (title_input.length < 1) {
-        return false;
-      }
-  }
-
-  function validate_date() {
-    var due_date = document.forms["to-do"]["duedate"].value;
-    var date = new Date(due_date);
-    console.log(date);
-    if (date == null) {
-      return false;
-    }
-  }
-
-  function validate_description() {
-    var description = document.forms["to-do"]["description"].value;
-    if(description.length < 1) {
-      return false;
-    }
-
-  }
-
-  function validate_priority() {
-    var alphabet = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-    var priority = document.forms["to-do"]["priority"].value;
-    if(priority == "") {
-      return true;
-    }
-    if (isNaN(priority)) {
-      if (!(alphabet.includes(priority.toUpperCase()))) {
-        return false;
-      }
-      else {
-        return true;
-      }
-    }
-    else if (priority < 1 || priority > 10) {
-      return false;
-    }
-  }
-
-  function validate_status() {
-    var valid_inputs = ["not-started", "in-progress", "done"];
-    var status = document.forms["to-do"]["status"].value;
-    if(status == "") {
-      return true;
-    }
-    if (!valid_inputs.includes(status)) {
-      return false;
-    }
-  }
-
-  function validate_form() {
-    alert("Validate form is being run");
-    var alert_message = "";
-    if(validate_title() == false) {
-      alert_message += "Title must contain more than one character\n";
-    }
-    if(validate_date() == false) {
-      alert_message += "Date is invalid\n";
-    }
-    if(validate_description() == false) {
-      alert_message += "Description must contain more than one character\n";
-    }
-    if(validate_priority() == false) {
-      alert_message += "Priority is invalid\n";
-    }
-    if(validate_status() == false) {
-      alert_message += "Status is invalid";
-    }
-    if(alert_message.length == 0) {
-      return true;
-    }
-    else {
-      alert(alert_message);
-      return false;
-    }
-  }
-
-</script>
-
-
+<script src = "form_validation.js"></script>
 </head>
 <body>
 
@@ -128,12 +42,12 @@ table {
 				<td colspan = "1"><label for="duedate">Due Date</label></td>
 			</tr>
 			<tr>
-				<td><input type="text" id="title" name="title" placeholder="Title..."></td>
+				<td><input type="text" id="title" name="title" required placeholder="Title..."></td>
   				<td><input type= "date" id = "duedate" name = "duedate" placeholder = "mm/dd/yyyy"></td>
 			</tr>
 		</table>
   			<label for="description">Description</label>
-  			<input type="text" id="description" name="description" placeholder="Description...">
+  			<input type="text" id="description" name="description" required placeholder="Description...">
 		<table>
 			<tr>
 				<td colspan = "1"><label for="priority">Priority</label></th>
@@ -143,9 +57,11 @@ table {
 			<tr>
 				<td><input style = "width: 100%;" type="text" id="priority" name="priority" placeholder="Priority..."></th>
 				<td><input style = "width: 100%;" type="text" id="status" name="status" placeholder="Status..."></th>
-  			</tr>
+  		</tr>
+      <tr>
+        <td><input style = "width: 100%;" type = "submit" value = "Submit"></td>
+        <td><input style = "width: 100%; background-color: black; color: white;" type = "reset" value = "Cancel"></td>
 		</table>
-			<input type="submit" value="Submit">
 		</form>
 		</div>
 	</content>
