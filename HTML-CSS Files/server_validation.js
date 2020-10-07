@@ -1,24 +1,15 @@
 'use strict';
 
-//Using node.js version 12.18.0
-
 const http = require('http');
 const { parse } = require('querystring');
 
 const hostname = 'cscweb.lemoyne.edu';
-const port = 3301;	//Ports 3301-3305 are open for TCP and UDP
+const port = 3301;
 
-//Purpose: Connect to MySQL databse.
-//Inputs: None.
-//Post-conditions: Either connection is still undefined or connection established.
 function listen_func() {
 	console.log("form data version 04 (post) server running.");
 }
 
-//Purpose: Send a response to client.
-//Input: body - the POST data received from the client request.
-//	res - an http:ServerResponse object.
-//Post-conditions: Response has been sent.
 function process_other_request(body, reqMethod, res) {
 	console.log("Sending response for " + reqMethod + " request, whose data is:" + body);
 	var htmlResponse = `<!doctype html><html><head>` +
@@ -28,32 +19,20 @@ function process_other_request(body, reqMethod, res) {
 	send_response(htmlResponse, res);
 }
 
-//Purpose: Send a response to client.
-//Input: body - the POST data received from the client request.
-//	res - an http:ServerResponse object.
-//Post-conditions: Response has been sent.
 function process_post_request(body, res) {
 	console.log('POST data is: ' + body);
 	var postParams = parse(body);
 
-	var htmlResponse = validate_form(postParams);
+	var htmlResponse = validate_form(postParamsn);
 	send_response(htmlResponse, res);
 }
 
-//Purpose: Send an html response back to the client.
-//Inputs: htmlResponse - the html being sent back to the client.
-//	res - an http:ServerResponse object.
-//Post-conditions: An html response has been sent back to the client.
 function send_response(htmlResponse, res) {
 	res.writeHead(200);
 	res.write(htmlResponse);
 	res.end();
 }
 
-//Purpose: Create an http server.
-//Inputs: req - a http:
-//	res - an http:ServerResponse object.
-//Purpose:
 const http_server = function(req, res) {
 	var body = "";
 	req.on('data', function (chunk) {
@@ -133,19 +112,19 @@ function validate_form(postParams) {
 		`<ul><li>Provides a response to the version 4 POST request simple form.</li></ul>`;
 
   if(validate_title(postParams.title) == false) {
-    alert_message += `<p>Title must contain more than one character</p>`;
+    htmlResponse += `<p>Title must contain more than one character</p>`;
   }
   if(validate_date(postParams.due_date) == false) {
-    alert_message += `<p>Date is invalid</p>`;
+    htmlResponse += `<p>Date is invalid</p>`;
   }
   if(validate_description(postParams.description) == false) {
-    alert_message += `<p>Description must contain more than one character</p>`;
+    htmlResponse += `<p>Description must contain more than one character</p>`;
   }
   if(validate_priority(postParams.priority) == false) {
-    alert_message += `<p>Priority is invalid</p>`;
+    htmlResponse += `<p>Priority is invalid</p>`;
   }
   if(validate_status(postParams.status) == false) {
-    alert_message += `<p>Status is invalid</p>`;
+    htmlResponse += `<p>Status is invalid</p>`;
   }
   if(alert_message.length == 0) {
     htmlResponse += `<p>Title: " + ${postParams.title}</p>`
