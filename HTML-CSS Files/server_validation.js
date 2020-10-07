@@ -126,7 +126,7 @@ function validate_form(postParams) {
   if(validate_status(postParams.status) == false) {
     htmlResponse += `<p>Status is invalid</p>`;
   }
-  if(alert_message.length == 0) {
+  if(htmlResponse.length == 0) {
     htmlResponse += `<p>Title: " + ${postParams.title}</p>`
                   + `<p>Due Date: + ${postParams.due_date}</p>`
                   + `<p>Description: + ${postParams.description}</p>`
