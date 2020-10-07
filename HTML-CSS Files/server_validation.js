@@ -23,7 +23,7 @@ function process_post_request(body, res) {
 	console.log('POST data is: ' + body);
 	var postParams = parse(body);
 
-	var htmlResponse = validate_form(postParamsn);
+	var htmlResponse = validate_form(postParams);
 	send_response(htmlResponse, res);
 }
 
