@@ -60,12 +60,15 @@ function validate_title(title_input) {
 
 function validate_date(due_date) {
   var date = new Date(due_date);
+  console.log(date);
+  console.log(date.toString());
   if(!date) {
-    return true;
+    return false;
   }
   if (date.toString() == "Invalid Date") {
     return false;
   }
+  return true;
 }
 
 function validate_description(description) {
