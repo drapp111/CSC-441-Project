@@ -8,7 +8,7 @@ const fs = require('fs');
 const url = require('url');
 
 const hostname = 'cscweb.lemoyne.edu';
-const port = 3301;	//Ports 3301-3305 are open for TCP and UDP
+const port = 3301;
 
 var validTitle = true;
 var validDate = true;
@@ -16,28 +16,16 @@ var validDescription = true;
 var validStatus = true;
 var validPriority = true;
 
-
-//Purpose: Connect to MySQL databse.
-//Inputs: None.
-//Post-conditions: Either connection is still undefined or connection established.
 function listen_func() {
   console.log("form data version 04 (post) server running.");
 }
 
-//Purpose: Send a response to client.
-//Input: body - the POST data received from the client request.
-//	res - an http:ServerResponse object.
-//Post-conditions: Response has been sent.
 function process_other_request(body, reqMethod, res) {
   console.log("Sending response for " + reqMethod + " request, whose data is:" + body);
   var htmlResponse = ``;
 	send_response(htmlResponse, res);
 }
 
-//Purpose: Send a response to client.
-//Input: body - the POST data received from the client request.
-//	res - an http:ServerResponse object.
-//Post-conditions: Response has been sent.
 function process_post_request(body, res) {
   console.log('POST data is: ' + body);
   var postParams = parse(body);
@@ -93,10 +81,6 @@ function process_post_request(body, res) {
   }
 }
 
-//Purpose: Send an html response back to the client.
-//Inputs: htmlResponse - the html being sent back to the client.
-//	res - an http:ServerResponse object.
-//Post-conditions: An html response has been sent back to the client.
 function send_response(htmlResponse, res) {
 	res.writeHead(200);
 	res.write(htmlResponse);
@@ -189,18 +173,12 @@ function validate_form(postParams) {
   return htmlResponse;
 }
 
-//Purpose: Create an http server.
-//Inputs: req - a http:
-//	res - an http:ServerResponse object.
-//Purpose: 
 const http_server = function(req, res) {
   var body = ""
 	req.on('data', function (chunk) {
-		//Continue receiving data for one client request
 		body += chunk;
 	});
 	req.on('end', function () {
-		//Received all client request data; process this request
 		if (req.method == "POST")
 			process_post_request(body, res);
 		else
