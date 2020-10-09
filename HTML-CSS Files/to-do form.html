@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" href="styles\styling.css">
+<link rel="stylesheet" href='styles/styling.css'>
 <style>
 div {
   margin: 5px 0;
@@ -17,6 +17,11 @@ table {
 }
 
 </style>
+<script>
+
+	//alert
+
+</script>
 </head>
 <body>
 
@@ -54,21 +59,20 @@ table {
 				<td colspan = "1"><label for="duedate">Due Date</label></td>
 			</tr>
 			<tr>
-				<td><input type="text" id="title" name="title" required placeholder="Title..."></td>
-  				<td><input type= "date" id = "duedate" name = "duedate" placeholder = "mm/dd/yyyy"></td>
+				<td><input type="text" id="title" name="title" required  placeholder="Title..." titlevalue ></td>
+  				<td><input type= "date" id = "duedate" name = "duedate" placeholder = "mm/dd/yyyy" datevalue ></td>
 			</tr>
 		</table>
   			<label for="description">Description</label>
-  			<input type="text" id="description" name="description" required placeholder="Description...">
+  			<input type="text" id="description" name="description" required placeholder="Description..." descriptionvalue >
 		<table>
 			<tr>
 				<td colspan = "1"><label for="priority">Priority</label></th>
 				<td colspan = "1"><label for="status">Status</label></th>
 			</tr>
-
 			<tr>
-				<td><input style = "width: 100%;" type="text" id="priority" name="priority" placeholder="Priority..."></th>
-				<td><input style = "width: 100%;" type="text" id="status" name="status" placeholder="Status..."></th>
+				<td><input style = "width: 100%;" type="text" id="priority" name="priority" placeholder="Priority..." priorityvalue ></th>
+				<td><input style = "width: 100%;" type="text" id="status" name="status" placeholder="Status..." statusvalue ></th>
   		</tr>
       <tr>
         <td><input style = "width: 100%;" type = "submit" value = "Submit"></td>
@@ -84,13 +88,4 @@ table {
 </footer>
 
 </body>
-<script>
-
-if (req.param("error" == 1)) {
-
-  Alert()
-
-}
-
-
 </html>

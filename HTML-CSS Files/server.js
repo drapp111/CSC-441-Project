@@ -8,7 +8,7 @@ const fs = require('fs');
 const url = require('url');
 
 const hostname = 'cscweb.lemoyne.edu';
-const port = 3301;
+const port = 3301;	//Ports 3301-3305 are open for TCP and UDP
 
 var validTitle = true;
 var validDate = true;
@@ -16,23 +16,43 @@ var validDescription = true;
 var validStatus = true;
 var validPriority = true;
 
+
+//Purpose: Connect to MySQL databse.
+//Inputs: None.
+//Post-conditions: Either connection is still undefined or connection established.
 function listen_func() {
   console.log("form data version 04 (post) server running.");
 }
 
+//Purpose: Send a response to client.
+//Input: body - the POST data received from the client request.
+//	res - an http:ServerResponse object.
+//Post-conditions: Response has been sent.
 function process_other_request(body, reqMethod, res) {
   console.log("Sending response for " + reqMethod + " request, whose data is:" + body);
   var htmlResponse = ``;
 	send_response(htmlResponse, res);
 }
 
+//Purpose: Send a response to client.
+//Input: body - the POST data received from the client request.
+//	res - an http:ServerResponse object.
+//Post-conditions: Response has been sent.
 function process_post_request(body, res) {
   console.log('POST data is: ' + body);
   var postParams = parse(body);
   var error_message = validate_form(postParams);
-  console.log(error_message);
   if(!validDate || !validDescription || !validPriority || !validStatus || !validTitle) {
-    error_message += `
+    var formPage = readWriteSync('D:\\Data\\www\\syr\\rappdb\\to-do form.html');
+    formPage = formPage.replace('titlevalue', 'value =' + postParams.title);
+    formPage = formPage.replace('datevalue', 'value = ' + postParams.duedate);
+    formPage = formPage.replace('descriptionvalue', 'value = ' + postParams.description);
+    formPage = formPage.replace('statusvalue', 'value = ' + postParams.status);
+    formPage = formPage.replace('priorityvalue', 'value = ' + postParams.priority);
+    formPage = formPage.replace('//alert', 'alert("' + error_message + '");');
+    console.log(formPage);
+
+    /*error_message += `
     <form name = "to-do" method = "post" action = "http://cscweb.lemoyne.edu:3301">
 		<table>
 			<tr>
@@ -61,8 +81,8 @@ function process_post_request(body, res) {
         <td><input style = "width: 100%; background-color: black; color: white;" type = "reset" value = "Cancel"></td>
 		</table>
 		</form>
-    `
-    send_response(error_message, res);
+    `*/
+    send_response(formPage, res);
   }
   else {
     var htmlResponse = `
@@ -81,6 +101,23 @@ function process_post_request(body, res) {
   }
 }
 
+function readWriteSync(file_path) {
+  var data = "";
+  try {
+    data = fs.readFileSync(file_path, 'utf8');
+    console.log(data);
+  }
+  catch(error) {
+    console.log(error);
+  }
+  return data;
+
+}
+
+//Purpose: Send an html response back to the client.
+//Inputs: htmlResponse - the html being sent back to the client.
+//	res - an http:ServerResponse object.
+//Post-conditions: An html response has been sent back to the client.
 function send_response(htmlResponse, res) {
 	res.writeHead(200);
 	res.write(htmlResponse);
@@ -146,39 +183,45 @@ function validate_status(status) {
 }
 
 function validate_form(postParams) {
-  var htmlResponse = `<html><body>`;
+  var error_message = "";
   if(validate_title(postParams.title) == false) {
-    htmlResponse += `<p>Title must contain more than one character</p>`;
+    error_message += 'Title must contain more than one character';
   }
   if(validate_date(postParams.duedate) == false) {
-    htmlResponse += `<p>Date is invalid</p>`;
+    error_message += 'Date is invalid';
   }
   if(validate_description(postParams.description) == false) {
-    htmlResponse += `<p>Description must contain more than one character</p>`;
+    error_message += 'Description must contain more than one character';
   }
   if(validate_priority(postParams.priority) == false) {
-    htmlResponse += `<p>Priority is invalid</p>`;
+    error_message += 'Priority is invalid';
   }
   if(validate_status(postParams.status) == false) {
-    htmlResponse += `<p>Status is invalid</p>`;
+    error_message += 'Status is invalid';
   }
-  if(htmlResponse.length == 0) {
-    htmlResponse += `<p>Title:  + ${postParams.title}</p>`
-                  + `<p>Due Date: + ${postParams.due_date}</p>`
-                  + `<p>Description: + ${postParams.description}</p>`
-                  + `<p>Priority: + ${postParams.priority}</p>`
-                  + `Status: + ${postParams.status}</p>`;
+  if(error_message.length == 0) {
+    error_message += 'Title: ' + postParams.title + "\n";
+                  + 'Due Date: ' + postParams.duedate + "\n";
+                  + 'Description: ' + postParams.description + "\n";
+                  + 'Priority: ' + postParams.priority + "\n";
+                  + 'Status: ' + postParams.status;
   }
-  htmlResponse += `</body></html>`;
-  return htmlResponse;
+  return error_message;
 }
 
+//Purpose: Create an http server.
+//Inputs: req - a http:
+//	res - an http:ServerResponse object.
+//Purpose: 
 const http_server = function(req, res) {
   var body = ""
 	req.on('data', function (chunk) {
+		//Continue receiving data for one client request
 		body += chunk;
 	});
 	req.on('end', function () {
+    //Received all client request data; process this request
+    readWriteSync();
 		if (req.method == "POST")
 			process_post_request(body, res);
 		else
