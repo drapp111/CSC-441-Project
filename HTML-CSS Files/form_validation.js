@@ -1,10 +1,3 @@
-function validate_title() {
-  var title_input = document.forms["to-do"]["title"].value;
-    if (title_input.length < 1) {
-      return false;
-    }
-}
-
 function validate_date() {
   var due_date = document.forms["to-do"]["duedate"].value;
   var date = new Date(due_date);
@@ -55,10 +48,8 @@ function validate_status() {
 }
 
 function validate_form() {
+  console.log("Got to here");
   var alert_message = "";
-  if(validate_title() == false) {
-    alert_message += "Title must contain more than one character\n";
-  }
   if(validate_date() == false) {
     alert_message += "Date is invalid\n";
   }
@@ -72,11 +63,10 @@ function validate_form() {
     alert_message += "Status is invalid";
   }
   if(alert_message.length == 0) {
-    alert("Title: " + document.forms["to-do"]["title"].value
-            + "\nDue Date: " + document.forms["to-do"]["duedate"].value
-          + "\nDescription: " + document.forms["to-do"]["description"].value
+    alert("\nDue Date: " + document.forms["to-do"]["duedate"].value
+        + "\nDescription: " + document.forms["to-do"]["description"].value
         + "\nPriority: " + document.forms["to-do"]["priority"].value
-      + "\nStatus: " + document.forms["to-do"]["status"].value);
+        + "\nStatus: " + document.forms["to-do"]["status"].value);
     return true;
   }
   else {
