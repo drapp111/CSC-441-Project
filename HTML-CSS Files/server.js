@@ -10,13 +10,6 @@ const url = require('url');
 const hostname = 'cscweb.lemoyne.edu';
 const port = 3301;	//Ports 3301-3305 are open for TCP and UDP
 
-var validTitle = true;
-var validDate = true;
-var validDescription = true;
-var validStatus = true;
-var validPriority = true;
-
-
 //Purpose: Connect to MySQL databse.
 //Inputs: None.
 //Post-conditions: Either connection is still undefined or connection established.
@@ -42,7 +35,7 @@ function process_post_request(body, res) {
   console.log('POST data is: ' + body);
   var postParams = parse(body);
   var error_message = validate_form(postParams);
-  if(!validDate || !validDescription || !validPriority || !validStatus || !validTitle) {
+  if(error_message.length != 0) {
     var invalid_res = invalid_response(postParams, error_message)
     send_invalid_response(invalid_res, res);
   }
@@ -109,14 +102,12 @@ function validate_date(due_date) {
     return true;
   }
   if (date.toString() == "Invalid Date") {
-    validDate = false;
     return false;
   }
 }
 
 function validate_description(description) {
   if(description.length < 1) {
-    validDescription = false;
     return false;
   }
 
@@ -129,16 +120,13 @@ function validate_priority(priority) {
   }
   if (isNaN(priority)) {
     if (!(alphabet.includes(priority.toUpperCase()))) {
-      validPriority = false;
       return false;
     }
     else {
-      validPriority = false;
       return true;
     }
   }
   else if (priority < 1 || priority > 10) {
-    validPriority = false;
     return false;
   }
 }
@@ -149,7 +137,6 @@ function validate_status(status) {
     return true;
   }
   if (!valid_inputs.includes(status)) {
-    validStatus = false;
     return false;
   }
 }
@@ -167,12 +154,6 @@ function validate_form(postParams) {
   }
   if(validate_status(postParams.status) == false) {
     error_message += 'Status is invalid';
-  }
-  if(error_message.length == 0) {
-    error_message += 'Due Date: ' + postParams.duedate + "\n";
-                  + 'Description: ' + postParams.description + "\n";
-                  + 'Priority: ' + postParams.priority + "\n";
-                  + 'Status: ' + postParams.status;
   }
   return error_message;
 }
