@@ -4,22 +4,20 @@
 
 const http = require('http');
 const { parse } = require('querystring');
-const fs = require('fs');
-const url = require('url');
+const fs = require('fs'); //for opening html files
 
 const hostname = 'cscweb.lemoyne.edu';
 const port = 3301;	//Ports 3301-3305 are open for TCP and UDP
 
-//Purpose: Connect to MySQL databse.
-//Inputs: None.
-//Post-conditions: Either connection is still undefined or connection established.
+//Log the start of server functionality
 function listen_func() {
   console.log("form data version 04 (post) server running.");
 }
 
 //Purpose: Send a response to client.
-//Input: body - the POST data received from the client request.
+//Input: body - the type of data received from the client request.
 //	res - an http:ServerResponse object.
+//  reqMethod - the type of request sent
 //Post-conditions: Response has been sent.
 function process_other_request(body, reqMethod, res) {
   console.log("Sending response for " + reqMethod + " request, whose data is:" + body);
@@ -44,14 +42,26 @@ function process_post_request(body, res) {
   }
 }
 
+//Purpose: Send a valid response from the server to the webpage
+//Input: postParams - the data sent in the POST request, res - the response object
+//Post: sends a response to the send_response method
+
 function send_valid_response(postParams, res) {
   var createdFormPage = valid_response(postParams);
   send_response(createdFormPage, res);
 }
 
+//Purpose: send an invalid response to the webpage
+//Input: invalid_response - and html doc that is sent back to the webpage to tell the user their inputs are invalid, res - a response object
+//Post: sends data to the send_response method
+
 function send_invalid_response(invalid_response, res) {
   send_response(invalid_response, res);
 }
+
+//Purpose: Creates the html response page to an invalid user response
+//Input: postParams - data sent with the POST request, error_message - message generatedfrom the input validation
+//Post: returns a modified version of the original form to be redisplayed
 
 function invalid_response(postParams, error_message) {
   var formPage = readWriteSync('./to-do form.html');
@@ -63,6 +73,10 @@ function invalid_response(postParams, error_message) {
   return formPage;
 }
 
+//Purpose: creates an html doc for a valid user input response
+//Input: postParams - the data sent with the POST request
+//Post: returns a new page that has the original user data on display
+
 function valid_response(postParams) {
   var createdFormPage = readWriteSync('./newFormCreated.html');
   createdFormPage = createdFormPage.replace('Due Date: ', 'Due Date: ' + postParams.duedate);
@@ -72,6 +86,10 @@ function valid_response(postParams) {
   console.log(createdFormPage);
   return createdFormPage;
 }
+
+//Purpose: Read a file synchronously
+//Input: file_path - the path to the file
+//Post: returns a string version of the file
 
 function readWriteSync(file_path) {
   var data = "";
@@ -96,6 +114,10 @@ function send_response(htmlResponse, res) {
 	res.end();
 }
 
+//Purpose: validate the date data
+//Input: due_date - the date input by the user
+//Post: returns a boolean whether the data is valid or invalid
+
 function validate_date(due_date) {
   var date = new Date(due_date);
   if(!date) {
@@ -106,12 +128,21 @@ function validate_date(due_date) {
   }
 }
 
+//Purpose: validate the description
+//Input: description - the user input 
+//Post: returns a boolean whether the data is valid or invalid
+
 function validate_description(description) {
   if(description.length < 1) {
     return false;
   }
+  return true;
 
 }
+
+//Purpose: validate the priority value
+//Input: priority - the user input
+//Post: returns a boolean whether the data is valid or invalid
 
 function validate_priority(priority) {
   var alphabet = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
@@ -131,6 +162,10 @@ function validate_priority(priority) {
   }
 }
 
+//Purpose: validate status value
+//Input: status - the user input for the status
+//Post: returns a boolean whether the data is valid or invalid
+
 function validate_status(status) {
   var valid_inputs = ["not-started", "in-progress", "done"];
   if(status == "") {
@@ -140,6 +175,10 @@ function validate_status(status) {
     return false;
   }
 }
+
+//Purpose: combine all the validation functions
+//Input: postParams - the data sent along in the POST request
+//Post: returns a string error_message that either has errors or is empty
 
 function validate_form(postParams) {
   var error_message = "";
