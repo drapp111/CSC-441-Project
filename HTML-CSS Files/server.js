@@ -43,62 +43,42 @@ function process_post_request(body, res) {
   var postParams = parse(body);
   var error_message = validate_form(postParams);
   if(!validDate || !validDescription || !validPriority || !validStatus || !validTitle) {
-    var formPage = readWriteSync('D:\\Data\\www\\syr\\rappdb\\to-do form.html');
-    formPage = formPage.replace('titlevalue', 'value =' + postParams.title);
-    formPage = formPage.replace('datevalue', 'value = ' + postParams.duedate);
-    formPage = formPage.replace('descriptionvalue', 'value = ' + postParams.description);
-    formPage = formPage.replace('statusvalue', 'value = ' + postParams.status);
-    formPage = formPage.replace('priorityvalue', 'value = ' + postParams.priority);
-    formPage = formPage.replace('//alert', 'alert("' + error_message + '");');
-    console.log(formPage);
-
-    /*error_message += `
-    <form name = "to-do" method = "post" action = "http://cscweb.lemoyne.edu:3301">
-		<table>
-			<tr>
-				<td colspan = "1"><label for = "Title">Title</label></td>
-				<td colspan = "1"><label for="duedate">Due Date</label></td>
-			</tr>
-			<tr>
-				<td><input type="text" id="title" name="title" required value ="${postParams.title}"></td>
-  				<td><input type= "date" id = "duedate" name = "duedate" value = "${postParams.duedate}"></td>
-			</tr>
-		</table>
-  			<label for="description">Description</label>
-  			<input type="text" id="description" name="description" required value="${postParams.description}">
-		<table>
-			<tr>
-				<td colspan = "1"><label for="priority">Priority</label></th>
-				<td colspan = "1"><label for="status">Status</label></th>
-			</tr>
-
-			<tr>
-				<td><input style = "width: 100%;" type="text" id="priority" name="priority" value ="${postParams.priority}"></th>
-				<td><input style = "width: 100%;" type="text" id="status" name="status" value="${postParams.status}"></th>
-  		</tr>
-      <tr>
-        <td><input style = "width: 100%;" type = "submit" value = "Submit"></td>
-        <td><input style = "width: 100%; background-color: black; color: white;" type = "reset" value = "Cancel"></td>
-		</table>
-		</form>
-    `*/
+    var invalid_response = invalid_response(postParams, error_message)
+    console.log(invalid_response);
     send_response(formPage, res);
   }
   else {
-    var htmlResponse = `
-    <html><body>
-
-    <p>Title: ${postParams.title}</p>
-    <p>Due Date: ${postParams.duedate}</p>
-    <p>Description: ${postParams.description}</p>
-    <p>Priority: ${postParams.priority}</p>
-    <p>Status: ${postParams.status}</p>
-
-    <a href = "http://cscweb.lemoyne.edu/rappdb/to-do%20form.html">New To-Do Item</a>
-    <a href="http://cscweb.lemoyne.edu/rappdb/index.html">Home</a>
-    `
-    send_response(htmlResponse, res);
+    send_valid_response(res);
   }
+}
+
+function send_valid_response(postParams, res) {
+  var createdFormPage = readWriteSync('./newFormCreated');
+  createdFormPage += valid_response(postParams);
+  send_response(createdFormPage, res);
+}
+
+function send_invalid_response() {
+
+}
+
+function invalid_response(postParams, error_message) {
+  var formPage = readWriteSync('./to-do form.html');
+  formPage = formPage.replace('titlevalue', 'value =' + postParams.title);
+  formPage = formPage.replace('datevalue', 'value = ' + postParams.duedate);
+  formPage = formPage.replace('descriptionvalue', 'value = ' + postParams.description);
+  formPage = formPage.replace('statusvalue', 'value = ' + postParams.status);
+  formPage = formPage.replace('priorityvalue', 'value = ' + postParams.priority);
+  formPage = formPage.replace('//alert', 'alert("' + error_message + '");');
+}
+
+function valid_response(postParams) {
+  var script = `<script>
+  document.getElementById('date').innerHTML = Due Date: ` + postParams.duedate
+  + `document.getElementById('description').innerHTML = Description: ` + postParams.description
+  + `document.getElementById('priority').innerHTML = Priority: ` + postParams.priority
+  + `document.getElementById('status').innerHTML = Status: ` + postParams.status;
+  return script;
 }
 
 function readWriteSync(file_path) {
