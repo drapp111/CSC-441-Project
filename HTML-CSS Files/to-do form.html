@@ -52,14 +52,14 @@ table {
 
 	<content style = "height: 350px;">
 		<div>
-		<form name = "to-do" onsubmit = "return validate_form()" method = "post"> <!--action = "http://cscweb.lemoyne.edu:3301">-->
+		<form name = "to-do" method = "post" action = "http://cscweb.lemoyne.edu:3301">
 		<table>
 			<tr>
-				<td colspan = "1"><label for = "description">Title</label></td>
+				<td colspan = "1"><label for = "description">Description</label></td>
 				<td colspan = "1"><label for="duedate">Due Date</label></td>
 			</tr>
 			<tr>
-				<td><input type="text" id="description" name="description" required  placeholder="Description..." titlevalue ></td>
+				<td><input type="text" id="description" name="description" required  placeholder="Description..." descriptionvalue ></td>
   				<td><input type= "date" id = "duedate" name = "duedate" placeholder = "mm/dd/yyyy" datevalue ></td>
 			</tr>
 			<tr>

@@ -43,42 +43,41 @@ function process_post_request(body, res) {
   var postParams = parse(body);
   var error_message = validate_form(postParams);
   if(!validDate || !validDescription || !validPriority || !validStatus || !validTitle) {
-    var invalid_response = invalid_response(postParams, error_message)
-    console.log(invalid_response);
-    send_response(formPage, res);
+    var invalid_res = invalid_response(postParams, error_message)
+    send_invalid_response(invalid_res, res);
   }
   else {
-    send_valid_response(res);
+    send_valid_response(postParams, res);
   }
 }
 
 function send_valid_response(postParams, res) {
-  var createdFormPage = readWriteSync('./newFormCreated');
-  createdFormPage += valid_response(postParams);
+  var createdFormPage = valid_response(postParams);
   send_response(createdFormPage, res);
 }
 
-function send_invalid_response() {
-
+function send_invalid_response(invalid_response, res) {
+  send_response(invalid_response, res);
 }
 
 function invalid_response(postParams, error_message) {
   var formPage = readWriteSync('./to-do form.html');
-  formPage = formPage.replace('titlevalue', 'value =' + postParams.title);
   formPage = formPage.replace('datevalue', 'value = ' + postParams.duedate);
   formPage = formPage.replace('descriptionvalue', 'value = ' + postParams.description);
   formPage = formPage.replace('statusvalue', 'value = ' + postParams.status);
   formPage = formPage.replace('priorityvalue', 'value = ' + postParams.priority);
   formPage = formPage.replace('//alert', 'alert("' + error_message + '");');
+  return formPage;
 }
 
 function valid_response(postParams) {
-  var script = `<script>
-  document.getElementById('date').innerHTML = Due Date: ` + postParams.duedate
-  + `document.getElementById('description').innerHTML = Description: ` + postParams.description
-  + `document.getElementById('priority').innerHTML = Priority: ` + postParams.priority
-  + `document.getElementById('status').innerHTML = Status: ` + postParams.status;
-  return script;
+  var createdFormPage = readWriteSync('./newFormCreated.html');
+  createdFormPage = createdFormPage.replace('Due Date: ', 'Due Date: ' + postParams.duedate);
+  createdFormPage = createdFormPage.replace('Description: ', 'Description: ' + postParams.description);
+  createdFormPage = createdFormPage.replace('Priority: ', 'Priority: ' + postParams.priority);
+  createdFormPage = createdFormPage.replace('Status: ', 'Status: ' + postParams.status);
+  console.log(createdFormPage);
+  return createdFormPage;
 }
 
 function readWriteSync(file_path) {
@@ -102,13 +101,6 @@ function send_response(htmlResponse, res) {
 	res.writeHead(200);
 	res.write(htmlResponse);
 	res.end();
-}
-
-function validate_title(title_input) {
-    if (title_input.length < 1) {
-      validTitle = false;
-      return false;
-    }
 }
 
 function validate_date(due_date) {
@@ -164,9 +156,6 @@ function validate_status(status) {
 
 function validate_form(postParams) {
   var error_message = "";
-  if(validate_title(postParams.title) == false) {
-    error_message += 'Title must contain more than one character';
-  }
   if(validate_date(postParams.duedate) == false) {
     error_message += 'Date is invalid';
   }
@@ -180,8 +169,7 @@ function validate_form(postParams) {
     error_message += 'Status is invalid';
   }
   if(error_message.length == 0) {
-    error_message += 'Title: ' + postParams.title + "\n";
-                  + 'Due Date: ' + postParams.duedate + "\n";
+    error_message += 'Due Date: ' + postParams.duedate + "\n";
                   + 'Description: ' + postParams.description + "\n";
                   + 'Priority: ' + postParams.priority + "\n";
                   + 'Status: ' + postParams.status;
@@ -201,7 +189,6 @@ const http_server = function(req, res) {
 	});
 	req.on('end', function () {
     //Received all client request data; process this request
-    readWriteSync();
 		if (req.method == "POST")
 			process_post_request(body, res);
 		else
