@@ -14,6 +14,16 @@ var con = mysql.createConnection({
   database: "ToDo441",
 })
 
+global.id;
+
+function get_id(callback) {
+  con.query("SELECT FROM todoItem WHERE username = 'declan'", function(err, results) {
+    if (err) throw err;
+    console.log(results[0].id);
+    return callback(results[0].id);
+  })
+}
+
 const hostname = 'cscweb.lemoyne.edu';
 const port = 3301;	//Ports 3301-3305 are open for TCP and UDP
 
@@ -97,7 +107,7 @@ function valid_response(postParams) {
 }
 
 function add_db_item(postParams) {
-  var insertItems = `('10', '10', '${postParams.description}', '${postParams.priority}', '${postParams.duedate}', '${postParams.status}')`;
+  var insertItems = `('${id}', '${id}', '${postParams.description}', '${postParams.priority}', '${postParams.duedate}', '${postParams.status}')`;
   con.query(`INSERT INTO todoItem (toDoID, id, description, priority, dueDate, status) VALUES ${insertItems}`, function(err){ 
     if (err){
       throw err;
@@ -221,6 +231,9 @@ function validate_form(postParams) {
 //	res - an http:ServerResponse object.
 //Purpose: 
 const http_server = function(req, res) {
+  get_id(function(result) {
+    id = result;
+  })
   var body = ""
 	req.on('data', function (chunk) {
 		//Continue receiving data for one client request
