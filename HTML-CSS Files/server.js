@@ -14,11 +14,6 @@ var con = mysql.createConnection({
   database: "ToDo441",
 })
 
-var id = con.query("SELECT id FROM todo WHERE username = 'declan'", function(err, result, fields) {
-  if(err) throw err;
-  return result;
-})
-
 const hostname = 'cscweb.lemoyne.edu';
 const port = 3301;	//Ports 3301-3305 are open for TCP and UDP
 
@@ -102,7 +97,7 @@ function valid_response(postParams) {
 }
 
 function add_db_item(postParams) {
-  var insertItems = `('${id}', '${id}', '${postParams.description}', '${postParams.priority}', '${postParams.duedate}', '${postParams.status})`;
+  var insertItems = `('10', '10', '${postParams.description}', '${postParams.priority}', '${postParams.duedate}', '${postParams.status}')`;
   con.query(`INSERT INTO todoItem (toDoID, id, description, priority, dueDate, status) VALUES ${insertItems}`, function(err){ 
     if (err){
       throw err;
