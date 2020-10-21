@@ -109,18 +109,19 @@ function valid_response(postParams) {
 
 function get_current_time() {
   var date = new Date();
-  var day = date.getDay;
-  var month = date.getMonth;
-  var year = date.getFullYear;
+  var day = ("0" + date.getDate()).slice(-2);
+  var month = ("0" + (date.getMonth()+1)).slice(-2);
+  var year = date.getFullYear();
   var current_date = year + "-" + month + "-" + day;
+  console.log(current_date);
   return current_date;
 
 }
 
 function add_db_item(postParams, id) {
-  var current_date = get_current_time;
-  var insertItems = `('${id}', '${postParams.description}', '${postParams.priority}', '${postParams.duedate}', '${postParams.status}')`;
-  con.query(`INSERT INTO todoItem (toDoID, description, priority, dueDate, status) VALUES ${insertItems}`, function(err){ 
+  var current_date = get_current_time();
+  var insertItems = `('${id}', '${current_date}', '${postParams.description}', '${postParams.priority}', '${postParams.duedate}', '${postParams.status}')`;
+  con.query(`INSERT INTO todoItem (toDoID, dateCreated, description, priority, dueDate, status) VALUES ${insertItems}`, function(err){ 
     if (err){
       throw err;
     }
