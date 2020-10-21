@@ -60,6 +60,7 @@ function process_post_request(body, res) {
 //Post: sends a response to the send_response method
 
 function send_valid_response(postParams, res) {
+  add_db_item(postParams);
   var createdFormPage = valid_response(postParams);
   send_response(createdFormPage, res);
 }
@@ -101,11 +102,13 @@ function valid_response(postParams) {
 }
 
 function add_db_item(postParams) {
-  var insertItems = [id, id, postParams.description, postParams.priority, postParams.duedate, postParams.status]
-  con.query("INSERT INTO todoItem (toDoID, id, description, priority, dueDate, status) VALUES ?", insertItems, function(err, result){ 
-    if (err) throw err;
+  var insertItems = [id, id, postParams.description, postParams.priority, postParams.duedate, postParams.status];
+  con.query("INSERT INTO todoItem (toDoID, id, description, priority, dueDate, status) VALUES ?", [insertItems], function(err, result){ 
+    if (err){
+      throw err;
+    }
     console.log("Success!");
-  })
+  });
 }
 
 //Purpose: Read a file synchronously
@@ -223,10 +226,6 @@ function validate_form(postParams) {
 //	res - an http:ServerResponse object.
 //Purpose: 
 const http_server = function(req, res) {
-  con.connect(function(err) {
-    if(err) throw err;
-    console.log("Connected!");
-  })
   var body = ""
 	req.on('data', function (chunk) {
 		//Continue receiving data for one client request
