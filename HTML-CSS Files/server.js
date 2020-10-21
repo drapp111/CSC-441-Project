@@ -5,6 +5,19 @@
 const http = require('http');
 const { parse } = require('querystring');
 const fs = require('fs'); //for opening html files
+const mysql = require('mysql');
+
+var con = mysql.createConnection({
+  host: "cscmysql.lemoyne.edu",
+  user: "rapp",
+  password: "rapp",
+  database: "ToDo441",
+})
+
+var id = con.query("SELECT id FROM todo WHERE username = 'declan'", function(err, result, fields) {
+  if(err) throw err;
+  return result;
+})
 
 const hostname = 'cscweb.lemoyne.edu';
 const port = 3301;	//Ports 3301-3305 are open for TCP and UDP
@@ -85,6 +98,14 @@ function valid_response(postParams) {
   createdFormPage = createdFormPage.replace('Status: ', 'Status: ' + postParams.status);
   console.log(createdFormPage);
   return createdFormPage;
+}
+
+function add_db_item(postParams) {
+  var insertItems = [id, id, postParams.description, postParams.priority, postParams.duedate, postParams.status]
+  con.query("INSERT INTO todoItem (toDoID, id, description, priority, dueDate, status) VALUES ?", insertItems, function(err, result){ 
+    if (err) throw err;
+    console.log("Success!");
+  })
 }
 
 //Purpose: Read a file synchronously
@@ -202,6 +223,10 @@ function validate_form(postParams) {
 //	res - an http:ServerResponse object.
 //Purpose: 
 const http_server = function(req, res) {
+  con.connect(function(err) {
+    if(err) throw err;
+    console.log("Connected!");
+  })
   var body = ""
 	req.on('data', function (chunk) {
 		//Continue receiving data for one client request
