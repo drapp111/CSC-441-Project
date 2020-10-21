@@ -102,8 +102,8 @@ function valid_response(postParams) {
 }
 
 function add_db_item(postParams) {
-  var insertItems = [id, id, postParams.description, postParams.priority, postParams.duedate, postParams.status];
-  con.query("INSERT INTO todoItem (toDoID, id, description, priority, dueDate, status) VALUES ?", [insertItems], function(err, result){ 
+  var insertItems = `('${id}', '${id}', '${postParams.description}', '${postParams.priority}', '${postParams.duedate}', '${postParams.status})`;
+  con.query(`INSERT INTO todoItem (toDoID, id, description, priority, dueDate, status) VALUES ${insertItems}`, function(err){ 
     if (err){
       throw err;
     }
