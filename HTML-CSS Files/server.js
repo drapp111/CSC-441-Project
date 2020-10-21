@@ -14,12 +14,9 @@ var con = mysql.createConnection({
   database: "ToDo441",
 })
 
-global.id;
-
 function get_id(callback) {
-  con.query("SELECT FROM todoItem WHERE username = 'declan'", function(err, results) {
+  con.query("SELECT id FROM todo WHERE username = 'declan'", function(err, results) {
     if (err) throw err;
-    console.log(results[0].id);
     return callback(results[0].id);
   })
 }
@@ -65,7 +62,11 @@ function process_post_request(body, res) {
 //Post: sends a response to the send_response method
 
 function send_valid_response(postParams, res) {
-  add_db_item(postParams);
+  var id;
+  get_id(function(result) {
+    id = result;
+    add_db_item(postParams, id);
+  })
   var createdFormPage = valid_response(postParams);
   send_response(createdFormPage, res);
 }
@@ -83,6 +84,7 @@ function send_invalid_response(invalid_response, res) {
 //Post: returns a modified version of the original form to be redisplayed
 
 function invalid_response(postParams, error_message) {
+  error_message += "Item NOT added to database";
   var formPage = readWriteSync('./to-do form.html');
   formPage = formPage.replace('datevalue', 'value = ' + postParams.duedate);
   formPage = formPage.replace('descriptionvalue', 'value = ' + postParams.description);
@@ -102,17 +104,27 @@ function valid_response(postParams) {
   createdFormPage = createdFormPage.replace('Description: ', 'Description: ' + postParams.description);
   createdFormPage = createdFormPage.replace('Priority: ', 'Priority: ' + postParams.priority);
   createdFormPage = createdFormPage.replace('Status: ', 'Status: ' + postParams.status);
-  console.log(createdFormPage);
   return createdFormPage;
 }
 
-function add_db_item(postParams) {
-  var insertItems = `('${id}', '${id}', '${postParams.description}', '${postParams.priority}', '${postParams.duedate}', '${postParams.status}')`;
-  con.query(`INSERT INTO todoItem (toDoID, id, description, priority, dueDate, status) VALUES ${insertItems}`, function(err){ 
+function get_current_time() {
+  var date = new Date();
+  var day = date.getDay;
+  var month = date.getMonth;
+  var year = date.getFullYear;
+  var current_date = year + "-" + month + "-" + day;
+  return current_date;
+
+}
+
+function add_db_item(postParams, id) {
+  var current_date = get_current_time;
+  var insertItems = `('${id}', '${postParams.description}', '${postParams.priority}', '${postParams.duedate}', '${postParams.status}')`;
+  con.query(`INSERT INTO todoItem (toDoID, description, priority, dueDate, status) VALUES ${insertItems}`, function(err){ 
     if (err){
       throw err;
     }
-    console.log("Success!");
+    console.log("Item successfully added");
   });
 }
 
@@ -124,7 +136,6 @@ function readWriteSync(file_path) {
   var data = "";
   try {
     data = fs.readFileSync(file_path, 'utf8');
-    console.log(data);
   }
   catch(error) {
     console.log(error);
@@ -212,16 +223,16 @@ function validate_status(status) {
 function validate_form(postParams) {
   var error_message = "";
   if(validate_date(postParams.duedate) == false) {
-    error_message += 'Date is invalid';
+    error_message += 'Date is invalid ';
   }
   if(validate_description(postParams.description) == false) {
-    error_message += 'Description must contain more than one character';
+    error_message += 'Description must contain more than one character ';
   }
   if(validate_priority(postParams.priority) == false) {
-    error_message += 'Priority is invalid';
+    error_message += 'Priority is invalid ';
   }
   if(validate_status(postParams.status) == false) {
-    error_message += 'Status is invalid';
+    error_message += 'Status is invalid ';
   }
   return error_message;
 }
@@ -231,9 +242,6 @@ function validate_form(postParams) {
 //	res - an http:ServerResponse object.
 //Purpose: 
 const http_server = function(req, res) {
-  get_id(function(result) {
-    id = result;
-  })
   var body = ""
 	req.on('data', function (chunk) {
 		//Continue receiving data for one client request
@@ -243,8 +251,6 @@ const http_server = function(req, res) {
     //Received all client request data; process this request
 		if (req.method == "POST")
 			process_post_request(body, res);
-		else
-			process_other_request(body, req.method, res);
 	});
 }
 
