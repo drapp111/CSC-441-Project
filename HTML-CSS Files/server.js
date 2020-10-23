@@ -14,6 +14,8 @@ var con = mysql.createConnection({
   database: "ToDo441",
 })
 
+
+
 function get_id(callback) {
   con.query("SELECT id FROM todo WHERE username = 'declan'", function(err, results) {
     if (err) throw err;
@@ -118,10 +120,23 @@ function get_current_time() {
 
 }
 
-function add_db_item(postParams, id) {
+function determine_db_inputs() {
   var current_date = get_current_time();
-  var insertItems = `('${id}', '${current_date}', '${postParams.description}', '${postParams.priority}', '${postParams.duedate}', '${postParams.status}')`;
-  con.query(`INSERT INTO todoItem (toDoID, dateCreated, description, priority, dueDate, status) VALUES ${insertItems}`, function(err){ 
+  var insertItems = `('${id}', '${current_date}', '${postParams.description}, '${post.Params.duedate}'`;
+  if(postParams.priority == '') {
+    insertItems += `, null`;
+  }
+  if(postParams.status == '') {
+    insertItems += `, null`;
+  }
+  insertItems += `)`;
+  return insertItems;
+  
+}
+
+function add_db_item(postParams, id) {
+  var insertItems = determine_db_inputs();
+  con.query(`INSERT INTO todoItem (toDoID, dateCreated, description, dueDate, priority, status) VALUES ${insertItems}`, function(err){ 
     if (err){
       throw err;
     }
