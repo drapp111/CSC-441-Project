@@ -32,14 +32,13 @@ function listen_func() {
 }
 
 //Purpose: Send a response to client.
-//Input: body - the type of data received from the client request.
-//	res - an http:ServerResponse object.
-//  reqMethod - the type of request sent
+//Input: res - an http:ServerResponse object.
 //Post-conditions: Response has been sent.
-function process_other_request(body, reqMethod, res) {
-  console.log("Sending response for " + reqMethod + " request, whose data is:" + body);
-  var htmlResponse = ``;
-	send_response(htmlResponse, res);
+
+function process_get_request(res) {
+  console.log("Get request");
+  var css_file = readWriteSync('./styles/styling.css');
+  send_response(css_file, res);
 }
 
 //Purpose: Send a response to client.
@@ -50,6 +49,7 @@ function process_post_request(body, res) {
   console.log('POST data is: ' + body);
   var postParams = parse(body);
   var error_message = validate_form(postParams);
+  console.log(typeof(postParams.duedate));
   if(error_message.length != 0) {
     var invalid_res = invalid_response(postParams, error_message)
     send_invalid_response(invalid_res, res);
@@ -67,10 +67,8 @@ function send_valid_response(postParams, res) {
   var id;
   get_id(function(result) {
     id = result;
-    add_db_item(postParams, id);
+    add_db_item(postParams, id, res);
   })
-  var createdFormPage = valid_response(postParams);
-  send_response(createdFormPage, res);
 }
 
 //Purpose: send an invalid response to the webpage
@@ -115,32 +113,50 @@ function get_current_time() {
   var month = ("0" + (date.getMonth()+1)).slice(-2);
   var year = date.getFullYear();
   var current_date = year + "-" + month + "-" + day;
-  console.log(current_date);
   return current_date;
 
 }
 
-function determine_db_inputs() {
+function determine_db_inputs(postParams, id) {
   var current_date = get_current_time();
-  var insertItems = `('${id}', '${current_date}', '${postParams.description}, '${post.Params.duedate}'`;
+  var insertItems = `('${id}', '${current_date}', '${postParams.description}'`;
+  if(postParams.duedate.length == 0) {
+    insertItems += `, NULL`;
+  }
+  else {
+    insertItems += `, '${postParams.duedate}'`
+  }
   if(postParams.priority == '') {
-    insertItems += `, null`;
+    insertItems += `, NULL`;
+  }
+  else {
+    insertItems += `, '${postParams.priority}'`
   }
   if(postParams.status == '') {
-    insertItems += `, null`;
+    insertItems += `, NULL`;
+  }
+  else {
+    insertItems += `, '${postParams.status}'`
   }
   insertItems += `)`;
   return insertItems;
   
 }
 
-function add_db_item(postParams, id) {
-  var insertItems = determine_db_inputs();
+function add_db_item(postParams, id, res) {
+  console.log("in the add function");
+  var insertItems = determine_db_inputs(postParams, id);
   con.query(`INSERT INTO todoItem (toDoID, dateCreated, description, dueDate, priority, status) VALUES ${insertItems}`, function(err){ 
     if (err){
-      throw err;
+      invalid_response = invalid_response(postParams, 'An Error Occurred ');
+      send_invalid_response(invalid_response, res);
+      return;
     }
-    console.log("Item successfully added");
+    else {
+      console.log("Item successfully added");
+      var createdFormPage = valid_response(postParams);
+      send_response(createdFormPage, res);
+    }
   });
 }
 
@@ -176,6 +192,9 @@ function send_response(htmlResponse, res) {
 
 function validate_date(due_date) {
   var date = new Date(due_date);
+  if(date = '') {
+    return true;
+  }
   if(!date) {
     return true;
   }
@@ -266,7 +285,10 @@ const http_server = function(req, res) {
 	req.on('end', function () {
     //Received all client request data; process this request
 		if (req.method == "POST")
-			process_post_request(body, res);
+      process_post_request(body, res);
+    else {
+      process_get_request(res);
+    }
 	});
 }
 
