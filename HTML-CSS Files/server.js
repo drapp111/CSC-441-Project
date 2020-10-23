@@ -6,6 +6,10 @@ const http = require('http');
 const { parse } = require('querystring');
 const fs = require('fs'); //for opening html files
 const mysql = require('mysql');
+const hostname = 'cscweb.lemoyne.edu';
+const port = 3301;	//Ports 3301-3305 are open for TCP and UDP
+
+//Connection to the Database
 
 var con = mysql.createConnection({
   host: "cscmysql.lemoyne.edu",
@@ -14,7 +18,9 @@ var con = mysql.createConnection({
   database: "ToDo441",
 })
 
-
+//Purpose: retrieve user id from database
+//Input: callback function
+//Post:  returns a callback function with access to user ID
 
 function get_id(callback) {
   con.query("SELECT id FROM todo WHERE username = 'declan'", function(err, results) {
@@ -22,9 +28,6 @@ function get_id(callback) {
     return callback(results[0].id);
   })
 }
-
-const hostname = 'cscweb.lemoyne.edu';
-const port = 3301;	//Ports 3301-3305 are open for TCP and UDP
 
 //Log the start of server functionality
 function listen_func() {
@@ -49,7 +52,6 @@ function process_post_request(body, res) {
   console.log('POST data is: ' + body);
   var postParams = parse(body);
   var error_message = validate_form(postParams);
-  console.log(typeof(postParams.duedate));
   if(error_message.length != 0) {
     var invalid_res = invalid_response(postParams, error_message)
     send_invalid_response(invalid_res, res);
@@ -107,6 +109,10 @@ function valid_response(postParams) {
   return createdFormPage;
 }
 
+//Purpose: get the current system date
+//Input: none
+//Post: returns current system date in form yyyy-mm-dd
+
 function get_current_time() {
   var date = new Date();
   var day = ("0" + date.getDate()).slice(-2);
@@ -116,6 +122,10 @@ function get_current_time() {
   return current_date;
 
 }
+
+//Purpose: Determine the value of each databse input
+//Input: postParams - request data, id - id of user
+//Post: returns a string of SQL values
 
 function determine_db_inputs(postParams, id) {
   var current_date = get_current_time();
@@ -143,14 +153,16 @@ function determine_db_inputs(postParams, id) {
   
 }
 
+//Purpose: Add a item to the database
+//Input: postParams - data from request, id - id of the sql user, res - response object
+//Post: Sends data to the appropriate response function
+
 function add_db_item(postParams, id, res) {
-  console.log("in the add function");
   var insertItems = determine_db_inputs(postParams, id);
   con.query(`INSERT INTO todoItem (toDoID, dateCreated, description, dueDate, priority, status) VALUES ${insertItems}`, function(err){ 
     if (err){
-      invalid_response = invalid_response(postParams, 'An Error Occurred ');
+      var invalid_response = invalid_response(postParams, 'An Error Occurred ');
       send_invalid_response(invalid_response, res);
-      return;
     }
     else {
       console.log("Item successfully added");
