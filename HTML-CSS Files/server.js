@@ -12,10 +12,7 @@ const port = 3301;	//Ports 3301-3305 are open for TCP and UDP
 //Connection to the Database
 
 var con = mysql.createConnection({
-  host: "cscmysql.lemoyne.edu",
-  user: "rapp",
-  password: "rapp",
-  database: "ToDo441",
+ //Connection Values
 })
 
 //Purpose: retrieve user id from database
